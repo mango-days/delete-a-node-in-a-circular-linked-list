@@ -1,11 +1,12 @@
-# delete an element in a circularly linked list
+# 2 way linked list
 
 class Node :
     def __init__ ( self , data ) :
+        self.prev = None
         self.data = data
         self.next = None
 
-class CircularLinkedList :
+class DoubleLinkedList :
     def __init__ ( self ) :
         self.head = None
     
@@ -13,76 +14,93 @@ class CircularLinkedList :
         if self.head == None :
             self.head = Node ( data )
             self.head.next = self.head
+            self.head.prev = self.head
+            print ( self.head.prev.data ,"  ", self.head.data ,"  ", self.head.next.data )
             return
         
-        # find last element
-        temp = self.head.next
-        prev = self.head
-        flag = self.head
-        while temp != flag :
-            prev = temp
-            if temp.next != None : temp = temp.next
-            
-        # insert element
-        prev.next = Node ( data )
-        prev.next.next = flag
+        temp = self.head
+        while temp :
+            if temp.next != self.head : temp = temp.next
+            else : break
+        
+        temp.next = Node ( data )
+        temp.next.next = self.head
+        temp.next.prev = temp
+        
+        self.head.prev = temp.next
+        print ( temp.next.prev.data ,"  ", temp.next.data ,"  ", temp.next.next.data )
         return
     
     def printList ( self ) :
-        if self.head == None :
-            print ( "List empty" )
-            return
         
+        print ("")
+        print ( "nodes inserted as ---" )
+        
+        if self.head == None : return
+        
+        print ( "pre", "node" , "next" )
+
+        print ( self.head.prev.data ,"  ", self.head.data ,"  ", self.head.next.data )
         temp = self.head.next
         prev = self.head
         flag = self.head
         while temp != flag :
-            print ( temp.data )
+            print ( temp.prev.data ,"  ", temp.data ,"  ", temp.next.data )
             temp = temp.next
         return
     
     def find ( self , data ) :
-        if self.head == None :
-            print ( "Not found" )
-            return None
+        if self.head == None : return
         
-        temp = self.head.next
-        found = False
-        flag = self.head
+        index = 1
+        temp = self.head
+        while temp :
+            if temp.data == data : return index
+            elif temp.next != self.head : temp = temp.next
+            else : return None
+            index += 1
+    
+    def size ( self ) :
+        if self.head == None : return 0
+        
         count = 0
-        
-        while temp != flag:
+        temp = self.head
+        while temp :
             count += 1
-            if temp.data == data :
-                found = True
-                break
-            temp = temp.next
-            
-        if found == True : print ( "Found at :" , count )
-        else : print ( "Not found" )
-        
-        return count
+            if temp.next != self.head : temp = temp.next
+            else : return count
     
     def delete ( self , data ) :
-        catch = self.find ( data )
-        if catch == None : return
         
-        caught = 0
-        prev = self.head
-        temp = self.head
-        
-        while catch != caught :
-            prev = temp
-            temp = temp.next
-            caught += 1
-        
-        prev.next = temp.next
-        self.printList()
-        return
-            
-CllObj = CircularLinkedList ()
+        print ("")
+        print ( "after deleting node with data", data, "---")
 
-for index in range ( 10 ) : 
-    CllObj.insert ( index )
+        data_index = self.find ( data )
+        if data_index == None : return
+
+        count = 1
+        temp = self.head
+        while count != data_index :
+            temp = temp.next
+            count += 1
+        prev = temp.prev
+        prev.next = temp.next
+        temp.next.prev = prev
+        
+        if  data_index == 1 : self.head = self.head.next
+        self.printList ()
+        return
     
-CllObj.delete ( 5 )
+Obj = DoubleLinkedList ()
+
+print ( "inserting nodes ---" )
+print ( "pre", "node" , "next" )
+for index in range (9) : Obj.insert (index+1)
+
+Obj.printList()
+
+Obj.delete ( 1 )
+Obj.delete ( 3 )
+Obj.delete ( 5 )
+Obj.delete ( 7 )
+Obj.delete ( 9 )
